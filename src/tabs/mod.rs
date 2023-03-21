@@ -1,0 +1,9 @@
+pub mod gameplay_tab;
+pub mod tab;
+pub mod system_tab;
+pub mod settings_tab;
+pub mod gpu_tab;
+pub mod vr_tab;
+pub mod module_tab;
+pub mod callstack_tab;
+pub mod exception_tab;
