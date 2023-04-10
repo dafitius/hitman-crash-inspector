@@ -34,8 +34,8 @@ pub fn draw(f: &mut Frame<CrosstermBackend<Stdout>>, app: &mut App) {
             .split(chunks[0]);
 
         let align2 = Layout::default().direction(Direction::Horizontal).constraints([
-            Constraint::Percentage(40),
-            Constraint::Percentage(60)
+            Constraint::Percentage(30),
+            Constraint::Percentage(70)
         ].as_ref())
         .split(align[1]);
 
@@ -55,7 +55,11 @@ pub fn draw(f: &mut Frame<CrosstermBackend<Stdout>>, app: &mut App) {
             Span::styled("l", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("ive refresh (", Style::default()),
             Span::styled(&live_update, Style::default().add_modifier(Modifier::BOLD)),
-            Span::styled(") ", Style::default()),
+            Span::styled(")", Style::default()),
+            Span::raw(" ――― "),
+            
+            Span::styled("q", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
+            Span::styled("uit", Style::default()),
         ];
 
         f.render_widget( Paragraph::new(Text::from(Spans::from(controls))), align2[1]);
