@@ -120,21 +120,14 @@ fn draw_camera(f: &mut Frame<CrosstermBackend<Stdout>>, metrics: &mut G2CrashMet
             Cell::from(camera.get(11).unwrap().to_string()),
         ]).height(2),
     ])
-// You can set the style of the entire Table.
         .style(Style::default().fg(Color::White))
-// It has an optional header, which is simply a Row always visible at the top.
         .header(
             Row::new(vec!["", "x", "y", "z"])
                 .style(Style::default().add_modifier(Modifier::BOLD))
-                // If you want some space between the header and the rest of the rows, you can always
-                // specify some margin at the bottom.
                 .bottom_margin(1)
         )
-// As any other widget, a Table can be wrapped in a Block.
         .block(Block::default().title("Camera").borders(Borders::ALL))
-// Columns widths are constrained in the same way as Layout...
         .widths(&[Constraint::Length(10), Constraint::Length(10), Constraint::Length(10), Constraint::Length(10)])
-// ...and they can be separated by a fixed spacing.
         .column_spacing(1);
 
     f.render_widget(table, area);

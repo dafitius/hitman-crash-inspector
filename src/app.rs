@@ -16,7 +16,6 @@ use crate::tabs::system_tab::SystemTab;
 use crate::tabs::vr_tab::VrTab;
 
 pub struct DataStore {
-
     pub should_quit: bool,
     pub enhanced_graphics: bool,
     pub should_live_update: bool,
@@ -26,7 +25,6 @@ pub struct DataStore {
 
     //callstack tab storage
     pub callstack: StatefulList<String>,
-
 
     //watched file props
     pub path: String,
@@ -45,9 +43,8 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new(title: &'a str, enhanced_graphics: bool) -> App<'a> {
-
         let config = Config::default()
-            .with_compare_contents(true) // crucial part for pseudo filesystems
+            .with_compare_contents(true)
             .with_poll_interval(Duration::from_secs(1));
         let (sender, receiver) = channel();
         let watcher = PollWatcher::new(sender, config).unwrap();
@@ -77,7 +74,7 @@ impl<'a> App<'a> {
 
                 enhanced_graphics,
             },
-            metrics: G2CrashMetrics::default()
+            metrics: G2CrashMetrics::default(),
         }
     }
 
@@ -100,10 +97,10 @@ impl<'a> App<'a> {
                     let path = self.data.path.clone();
                     self.update_metrics(path.as_str());
                 }
-            },
+            }
             KeyCode::Char('s') => {
                 self.save_metrics();
-            },
+            }
             KeyCode::Char('i') => {
                 self.import_metrics();
             }
@@ -114,23 +111,19 @@ impl<'a> App<'a> {
     }
 
     pub fn on_tick(&mut self) {
-
         while let Ok(event) = self.data.receiver.recv_timeout(Duration::from_millis(10)) {
-
-            if let Ok(event) = event{
-                if let Some(path) = event.paths.last(){
+            if let Ok(event) = event {
+                if let Some(path) = event.paths.last() {
                     if self.data.should_live_update {
                         self.update_metrics(path.to_str().unwrap());
                     }
                 }
             }
-
         }
     }
 
 
-    fn import_metrics(&mut self){
-
+    fn import_metrics(&mut self) {
         let path = FileDialog::new()
             .set_location("~/AppData")
             .add_filter("crash_metrics", &["dat", "json"])
@@ -150,25 +143,23 @@ impl<'a> App<'a> {
         }
     }
 
-    fn update_metrics(&mut self, path: &str){
-
-        if path.ends_with(".json"){
-            if let Ok(json_string) = std::fs::read_to_string(path){
-                match serde_json::from_str::<G2CrashMetrics>(&json_string){
-                    Ok(crash_metrics) => { self.metrics = crash_metrics},
+    fn update_metrics(&mut self, path: &str) {
+        if path.ends_with(".json") {
+            if let Ok(json_string) = std::fs::read_to_string(path) {
+                match serde_json::from_str::<G2CrashMetrics>(&json_string) {
+                    Ok(crash_metrics) => { self.metrics = crash_metrics }
                     Err(err) => panic!("{}", err),
                 }
             }
-        }
-        else{
-            match G2CrashMetrics::new(path){
-                Ok(crash_metrics) => { self.metrics = crash_metrics},
+        } else {
+            match G2CrashMetrics::new(path) {
+                Ok(crash_metrics) => { self.metrics = crash_metrics }
                 Err(err) => panic!("{}", err),
             }
         }
     }
 
-    fn save_metrics(&mut self){
+    fn save_metrics(&mut self) {
         let path = FileDialog::new()
             .set_location("~/Documents")
             .add_filter("crash_metrics.json", &["json"])
@@ -180,10 +171,9 @@ impl<'a> App<'a> {
             None => return,
         };
 
-        // Convert the Point to a JSON string.
+        // Convert the metrics to a JSON string.
         let serialized = serde_json::to_string(&self.metrics).unwrap();
 
         std::fs::write(path, serialized.as_bytes()).expect("Couldnt write to file");
-
     }
 }

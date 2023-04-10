@@ -44,11 +44,13 @@ pub fn draw(f: &mut Frame<CrosstermBackend<Stdout>>, app: &mut App) {
             Span::styled(" 1-8 ", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("switch tab", Style::default()),
             Span::raw(" ――― "),
+
             Span::styled("s", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("ave or ", Style::default()),
             Span::styled("i", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("mport file", Style::default()),
             Span::raw(" ――― "),
+
             Span::styled("Toggle ", Style::default()),
             Span::styled("l", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("ive refresh (", Style::default()),

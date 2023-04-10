@@ -65,8 +65,7 @@ fn draw_info(f: &mut Frame<CrosstermBackend<Stdout>>, metrics: &mut G2CrashMetri
     }
     app_state.modules.items = module_names;
 
-
-    // Draw Partitions
+    // Draw modules
     let modules: Vec<ListItem> = app_state.modules
         .items
         .iter()

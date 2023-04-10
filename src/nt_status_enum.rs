@@ -1,9 +1,8 @@
 use phf::{phf_map};
 
-//noinspection ALL
+
 pub(crate) static NTSTATUS: phf::Map<u32, &'static str> = phf_map! {
     0x00000000u32 => "STATUS_SUCCESS",
-0x00000001u32 => "STATUS_WAIT_1",
 0x00000002u32 => "STATUS_WAIT_2",
 0x00000003u32 => "STATUS_WAIT_3",
 0x0000003Fu32 => "STATUS_WAIT_63",
