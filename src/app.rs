@@ -143,7 +143,7 @@ impl<'a> App<'a> {
         }
     }
 
-    fn update_metrics(&mut self, path: &str) {
+    pub(crate) fn update_metrics(&mut self, path: &str) {
         if path.ends_with(".json") {
             if let Ok(json_string) = std::fs::read_to_string(path) {
                 match serde_json::from_str::<G2CrashMetrics>(&json_string) {

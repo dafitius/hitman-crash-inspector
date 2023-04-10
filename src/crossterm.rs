@@ -16,7 +16,7 @@ use tui::{
     Terminal,
 };
 
-pub fn run(tick_rate: Duration, enhanced_graphics: bool) -> Result<(), Box<dyn Error>> {
+pub fn run(tick_rate: Duration, enhanced_graphics: bool, metrics_path: Option<String>) -> Result<(), Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -25,7 +25,7 @@ pub fn run(tick_rate: Duration, enhanced_graphics: bool) -> Result<(), Box<dyn E
     let mut terminal = Terminal::new(backend)?;
 
     let app = App::new("Hitman 3 crash inspector", enhanced_graphics);
-    let res = run_app(&mut terminal, app, tick_rate);
+    let res = run_app(&mut terminal, app, tick_rate, metrics_path);
 
     // restore terminal
     disable_raw_mode()?;
@@ -47,7 +47,15 @@ fn run_app(
     terminal: &mut Terminal<CrosstermBackend<Stdout>>,
     mut app: App,
     tick_rate: Duration,
+    metrics_path: Option<String>,
 ) -> io::Result<()> {
+
+    if let Some(path) = metrics_path{
+        app.data.path = path.clone();
+        app.update_metrics(path.as_str());
+
+    }
+
     app.on_load();
     let mut last_tick = Instant::now();
     loop {
@@ -60,7 +68,7 @@ fn run_app(
             if let Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
-                        KeyCode::Char('q') => {
+                        KeyCode::Char('q') | KeyCode::Esc | KeyCode::Char('c') => {
                             app.data.should_quit = true;
                         }
                         _ => app.on_key(key.code)

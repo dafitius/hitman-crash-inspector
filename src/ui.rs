@@ -57,7 +57,7 @@ pub fn draw(f: &mut Frame<CrosstermBackend<Stdout>>, app: &mut App) {
             Span::styled(&live_update, Style::default().add_modifier(Modifier::BOLD)),
             Span::styled(")", Style::default()),
             Span::raw(" ――― "),
-            
+
             Span::styled("q", Style::default().add_modifier(Modifier::UNDERLINED).add_modifier(Modifier::BOLD)),
             Span::styled("uit", Style::default()),
         ];
