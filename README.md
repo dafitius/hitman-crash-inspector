@@ -5,7 +5,7 @@
 Hitman Crash Inspector is a terminal-based tool for decrypting and inspecting the `crash_metrics.dat` files from [HITMAN World of Assassination](https://ioi.dk/hitman). The tool provides detailed information on the crash described inside the crash metrics file.
 
 ## Usage
-To use the GUI, simply download the latest release from the [releases](https://github.com/dafitius/hitman-crash-inspector/releases) page and extract the contents of the zip file. You can then use the program by running the `hitman-crash-inspector.exe` file. The tool will automatically open a terminal, and you can select a `crash_metrics.dat` file manually. 
+To use the tool, simply download the latest release from the [releases](https://github.com/dafitius/hitman-crash-inspector/releases) page and extract the contents of the zip file. You can then use the program by running the `hitman-crash-inspector.exe` file. The tool will automatically open a terminal, and you can select a `crash_metrics.dat` file manually. 
 
 ### command-line arguments
 You can use the tool in a command-line by passing arguments to the `hitman-crash-inspector.exe` file. The following arguments are available:
