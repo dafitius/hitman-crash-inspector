@@ -1,5 +1,6 @@
 use std::sync::mpsc::{channel, Receiver};
 use std::time::Duration;
+use anyhow::{anyhow, Error};
 use crossterm::event::KeyCode;
 use native_dialog::FileDialog;
 use notify::{PollWatcher, RecursiveMode, Watcher, Config, Event};
@@ -17,6 +18,7 @@ use crate::tabs::vr_tab::VrTab;
 
 pub struct DataStore {
     pub should_quit: bool,
+    pub quit_msg: String,
     pub enhanced_graphics: bool,
     pub should_live_update: bool,
 
@@ -64,6 +66,7 @@ impl<'a> App<'a> {
                 ]),
             data: DataStore {
                 should_quit: false,
+                quit_msg: String::new(),
                 should_live_update: true,
 
                 modules: StatefulList::with_items(vec![]),
@@ -95,7 +98,13 @@ impl<'a> App<'a> {
                 self.data.should_live_update = !self.data.should_live_update;
                 if self.data.should_live_update {
                     let path = self.data.path.clone();
-                    self.update_metrics(path.as_str());
+                    match self.update_metrics(path.as_str()){
+                        Ok(_) => {},
+                        Err(e) => {
+                            self.data.should_quit = true;
+                            self.data.quit_msg = format!("Error while restarting live update: {e}");
+                        }
+                    }
                 }
             }
             KeyCode::Char('s') => {
@@ -114,8 +123,8 @@ impl<'a> App<'a> {
         while let Ok(event) = self.data.receiver.recv_timeout(Duration::from_millis(10)) {
             if let Ok(event) = event {
                 if let Some(path) = event.paths.last() {
-                    if self.data.should_live_update {
-                        self.update_metrics(path.to_str().unwrap());
+                    if self.data.should_live_update && self.update_metrics(path.to_str().unwrap()).is_err(){
+                        //skip on error, no need to panic here
                     }
                 }
             }
@@ -139,24 +148,31 @@ impl<'a> App<'a> {
 
         if let Some(path_str) = path.to_str() {
             self.data.path = path_str.to_string();
-            self.update_metrics(path_str);
+            match self.update_metrics(path_str){
+                Ok(_) => {},
+                Err(e) => {
+                    self.data.should_quit = true;
+                    self.data.quit_msg = format!("Error after file event: {e}")
+                }
+            }
         }
     }
 
-    pub(crate) fn update_metrics(&mut self, path: &str) {
+    pub(crate) fn update_metrics(&mut self, path: &str) -> Result<(), Error> {
         if path.ends_with(".json") {
             if let Ok(json_string) = std::fs::read_to_string(path) {
                 match serde_json::from_str::<G2CrashMetrics>(&json_string) {
                     Ok(crash_metrics) => { self.metrics = crash_metrics }
-                    Err(err) => panic!("{}", err),
+                    Err(err) => return Err(anyhow!("{}", err)),
                 }
             }
         } else {
             match G2CrashMetrics::new(path) {
                 Ok(crash_metrics) => { self.metrics = crash_metrics }
-                Err(err) => panic!("{}", err),
+                Err(err) => return Err(anyhow!("{}", err)),
             }
         }
+        Ok(())
     }
 
     fn save_metrics(&mut self) {

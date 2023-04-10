@@ -10,6 +10,7 @@ use std::{
     time::{Duration, Instant},
 };
 use std::io::Stdout;
+use anyhow::anyhow;
 use crossterm::event::KeyEventKind;
 use tui::{
     backend::CrosstermBackend,
@@ -48,12 +49,18 @@ fn run_app(
     mut app: App,
     tick_rate: Duration,
     metrics_path: Option<String>,
-) -> io::Result<()> {
+) -> Result<(), anyhow::Error> {
 
     if let Some(path) = metrics_path{
         app.data.path = path.clone();
-        app.update_metrics(path.as_str());
 
+        match app.update_metrics(path.as_str()){
+            Ok(_) => {},
+            Err(e) => {
+                app.data.should_quit = true;
+                app.data.quit_msg = format!("Error: {e}");
+            }
+        }
     }
 
     app.on_load();
@@ -81,7 +88,12 @@ fn run_app(
             last_tick = Instant::now();
         }
         if app.data.should_quit {
-            return Ok(());
+            if app.data.quit_msg.is_empty(){
+                return Ok(());
+            }
+            else{
+                return Err(anyhow!(app.data.quit_msg))
+            }
         }
     }
 }
