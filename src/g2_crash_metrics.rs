@@ -88,6 +88,10 @@ impl G2CrashMetrics {
 
     fn decipher(encrypted_data: Vec<u8>) -> Result<Vec<u8>, Error> {
 
+        if encrypted_data.len() < CRASH_METRICS_SIZE{
+            return Err(anyhow!("The given file cannot be decrypted"));
+        }
+
         let mut data: Vec<u8> = vec![];
         for (i, seq) in RAND_SEQUENCE.iter().enumerate() {
             let byte: i16 = *seq as i16 - encrypted_data[i] as i16;
